@@ -140,14 +140,20 @@
         throw "This implementation only supports single range copy and paste operations";
       }
 
+      // As columns can be moved around and Ranges specify row/column indexes which must be mapped
+      // to data *fields*, it is paramount to always obtain the latest columns definition list
+      // using the new API .getColumnsInfo():
+      var colsInfo = grid.getColumnsInfo();
+      var columnDefs = colsInfo.gridColumns;
+      
       var from = args.from[0];
       var to = args.to[0];
       var val;
       for (var i = 0; i <= from.toRow - from.fromRow; i++) {
         for (var j = 0; j <= from.toCell - from.fromCell; j++) {
           if (i <= to.toRow - to.fromRow && j <= to.toCell - to.fromCell) {
-            val = data[from.fromRow + i][columns[from.fromCell + j].field];
-            data[to.fromRow + i][columns[to.fromCell + j].field] = val;
+            val = data[from.fromRow + i][columnDefs[from.fromCell + j].field];
+            data[to.fromRow + i][columnDefs[to.fromCell + j].field] = val;
             grid.invalidateRow(to.fromRow + i);
           }
         }
